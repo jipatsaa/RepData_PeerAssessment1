@@ -8,6 +8,7 @@ output:
 ```{r}
     library(plyr)
     library(ggplot2)
+    library("reshape2")
 ```
 ## Loading and preprocessing the data
 ```{r}
@@ -23,21 +24,11 @@ output:
       stepSumByDate <- ddply(data, .(date), summarise, sumSteps = sum(steps, na.rm = TRUE))
       ggplot(stepSumByDate, aes(date, sumSteps))+ ggtitle("Sum steps by date")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity")
 ```
-### Calculate and report the mean and median of the total number of steps per day
+### Calculate and report the mean and median of the total number of steps of the whole period
 ```{r}
-      stepMeanByDate <- ddply(data, .(date), summarise, meanSteps = mean(steps, na.rm = TRUE))
-      #ggplot(stepMeanByDate, aes(date, meanSteps))+ ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
+      totalStepMean <- mean(stepSumByDate$sumSteps,na.rm = TRUE)
 
-      stepMedianByDate <- ddply(data, .(date), summarise, medianSteps = median(steps, na.rm = TRUE ))
-    #ggplot(stepMedianByDate, aes(date, medianSteps))+ ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
-      #Merge and melt the mean and median to plt them together
-      aux<-merge(stepMeanByDate,stepMedianByDate,by="date")
-
-      #Melt (write Mean values below median values)
-      meltedData <- melt(aux, id="date") 
-
-      ggplot(data=meltedData,aes(x=date, y=value, colour=variable))+ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
-      ggplot(data=meltedData,aes(x=date, y=value, colour=variable))+ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
+      totalStepMedian <- median(stepSumByDate$sumSteps,na.rm = TRUE)
       
 ```
 
