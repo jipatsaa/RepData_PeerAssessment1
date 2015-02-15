@@ -1,3 +1,6 @@
+```{r package_options, include=FALSE}
+knitr::opts_knit$set(progress = TRUE, verbose = TRUE)
+```
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
@@ -22,19 +25,22 @@ output:
 ### Calculate the total number of steps taken by day
 ```{r}
       stepSumByDate <- ddply(data, .(date), summarise, sumSteps = sum(steps, na.rm = TRUE))
-      ggplot(stepSumByDate, aes(date, sumSteps))+ ggtitle("Sum steps by date")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity")
-```
-### Calculate and report the mean and median of the total number of steps of the whole period
-```{r}
-      totalStepMean <- mean(stepSumByDate$sumSteps,na.rm = TRUE)
-
-      totalStepMedian <- median(stepSumByDate$sumSteps,na.rm = TRUE)
-      
+      ggplot(stepSumByDate, aes(date, sumSteps))+ ggtitle("Sum steps by date")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity",colour="red")
 ```
 
 ## What is the average daily activity pattern?
 
+```{r}
 
+
+
+      mean(stepSumByDate$sumSteps,na.rm = TRUE)
+ 
+
+      median(stepSumByDate$sumSteps,na.rm = TRUE)
+
+
+```
 
 ## Imputing missing values
 
