@@ -84,3 +84,16 @@ output:
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+  1. **Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.**
+```{r}
+#add information about the weekDay to dataNoNa
+      dataNoNa$weekDay<-weekdays(dataNoNa$date)
+      dataNoNa$weekDay<-sub("lunes|martes|miércoles|jueves|viernes","weekday",dataNoNa$weekDay)
+      dataNoNa$weekDay<-sub("sábado|domingo","weekend",dataNoNa$weekDay)
+
+#calculate the mean for each interval grouped by weekday/weekend
+
+      stepMeanByIntervalWeekdayNoNa <- ddply(dataNoNa, .(weekDay,interval), summarise, meanSteps = mean(steps, na.rm = TRUE))
+      ggplot(stepMeanByIntervalWeekdayNoNa, aes(interval,meanSteps))+ ggtitle("Avg. Steps by day interval")+theme(plot.title = element_text(face="bold"),axis.text.x = element_text(angle = 45, hjust = 1))+scale_x_continuous(breaks=seq(0, 3000, by=100))+ facet_grid(weekDay ~ .)+geom_line()
+```
