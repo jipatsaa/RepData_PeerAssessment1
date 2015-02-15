@@ -22,28 +22,65 @@ output:
 ```
 
 ## What is mean total number of steps taken per day?`
-### Calculate the total number of steps taken by day
+
+  1. **Calculate the total number of steps taken per day**
 ```{r}
       stepSumByDate <- ddply(data, .(date), summarise, sumSteps = sum(steps, na.rm = TRUE))
-      ggplot(stepSumByDate, aes(date, sumSteps))+ ggtitle("Sum steps by date")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity",colour="red")
+      ggplot(stepSumByDate, aes(date, sumSteps))+ ggtitle("Sum steps by date")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity",colour="black",fill="red")
+
 ```
-
-## What is the average daily activity pattern?
-
+  2. **Calculate and report the mean and median of the total number of steps taken per day**
 ```{r}
-
-
 
       mean(stepSumByDate$sumSteps,na.rm = TRUE)
  
-
       median(stepSumByDate$sumSteps,na.rm = TRUE)
-
 
 ```
 
+
+## What is the average daily activity pattern?
+
+   1. **Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)**
+```{r}
+      stepMeanByInterval <- ddply(data, .(interval), summarise, meanSteps = mean(steps, na.rm = TRUE))
+      ggplot(stepMeanByInterval, aes(interval,meanSteps))+ ggtitle("Avg. Steps by day interval")+theme(plot.title = element_text(face="bold"),axis.text.x = element_text(angle = 45, hjust = 1))+scale_x_continuous(breaks=seq(0, 3000, by=100))+geom_line()
+```
+
+
+   2. **Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?**
+   
+```{r}
+   
+       stepMeanByInterval[which.max(stepMeanByInterval$meanSteps),]
+   
+```
+   
 ## Imputing missing values
 
+1.**Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)**
+```{r}
+      length(is.na(data$steps))
+```
 
+2. **Devise a strategy for filling in all of the missing values in the dataset.**
+     I will replace the NA for the mean of the given interval
+
+```{r}
+#Create a function to replace na by the result of the function fun over the non missing values
+     funcToApply <- function(x, fun) {
+                  missing <- is.na(x)
+                  replace(x, missing, fun(x[!missing]))
+    }
+
+#use the ddply to apply the function 
+    data2<-ddply(data, ~ interval, transform, steps = funcToApply(steps, mean))
+
+#reorder the data by date
+      dataNoNa<-data2[order(as.Date(data2$date,format("%Y-%m-%d"))),]
+
+      stepSumByDateNoNa <- ddply(dataNoNa, .(date), summarise, sumSteps = sum(steps, na.rm = TRUE))
+      ggplot(stepSumByDateNoNa, aes(date, sumSteps))+ ggtitle("Sum steps by date (NA replaced by the interval mean)")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity",colour="black",fill="red")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
