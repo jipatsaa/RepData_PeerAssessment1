@@ -4,15 +4,42 @@ output:
   html_document:
     keep_md: true
 ---
-
-
+## Needed libraries
+```{r}
+    library(plyr)
+    library(ggplot2)
+```
 ## Loading and preprocessing the data
+```{r}
+      unzip("activity.zip")
+      data<-read.csv("activity.csv",sep = ",")
+      data$date <- as.Date(data$date, "%Y-%m-%d")
+      
+```
 
+## What is mean total number of steps taken per day?`
+### Calculate the total number of steps taken by day
+```{r}
+      stepSumByDate <- ddply(data, .(date), summarise, sumSteps = sum(steps, na.rm = TRUE))
+      ggplot(stepSumByDate, aes(date, sumSteps))+ ggtitle("Sum steps by date")+theme(plot.title = element_text(face="bold"))+geom_histogram(stat = "identity")
+```
+### Calculate and report the mean and median of the total number of steps per day
+```{r}
+      stepMeanByDate <- ddply(data, .(date), summarise, meanSteps = mean(steps, na.rm = TRUE))
+      #ggplot(stepMeanByDate, aes(date, meanSteps))+ ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
 
+      stepMedianByDate <- ddply(data, .(date), summarise, medianSteps = median(steps, na.rm = TRUE ))
+    #ggplot(stepMedianByDate, aes(date, medianSteps))+ ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
+      #Merge and melt the mean and median to plt them together
+      aux<-merge(stepMeanByDate,stepMedianByDate,by="date")
 
-## What is mean total number of steps taken per day?
+      #Melt (write Mean values below median values)
+      meltedData <- melt(aux, id="date") 
 
-
+      ggplot(data=meltedData,aes(x=date, y=value, colour=variable))+ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
+      ggplot(data=meltedData,aes(x=date, y=value, colour=variable))+ggtitle("Steps by date")+theme(plot.title = element_text(face="bold"))+geom_line()
+      
+```
 
 ## What is the average daily activity pattern?
 
